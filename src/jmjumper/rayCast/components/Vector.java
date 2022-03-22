@@ -1,4 +1,4 @@
-package jmjumper.rayCast.lightComponents;
+package jmjumper.rayCast.components;
 
 public class Vector {
 

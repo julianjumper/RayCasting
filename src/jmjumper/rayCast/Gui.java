@@ -1,5 +1,7 @@
 package jmjumper.rayCast;
 
+import jmjumper.rayCast.Simulation.SimulationWindow;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,6 +11,7 @@ public class Gui extends JFrame implements ActionListener {
     private final int WIDTH = 1200;
     private final int HEIGHT = 800;
     private final SimulationPanel simulationPanel;
+    private SimulationWindow simulationWindow;
 
     public Gui () {
         super("RayCasting - Simulation");
@@ -36,6 +39,12 @@ public class Gui extends JFrame implements ActionListener {
         setVisible(true);
         setLocationRelativeTo(null);
         pack();
+
+        createSecondWindow();
+    }
+
+    private void createSecondWindow () {
+        simulationWindow = new SimulationWindow(simulationPanel);
     }
 
     // actionPerformed aufgerufen durch den Timer

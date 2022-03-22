@@ -1,5 +1,7 @@
 package jmjumper.rayCast.lightComponents;
 
+import jmjumper.rayCast.components.Vector;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -20,6 +22,10 @@ public class LightRay extends JComponent {
         g2d.drawLine(posOrigin.getX(), posOrigin.getY(), posEnd.getX(), posEnd.getY());
     }
 
+    public int length () {
+        Vector len = this.posOrigin.substract(posEnd);
+        return (int) (Math.sqrt(len.getX()*len.getX() + len.getY() * len.getY()));
+    }
 
     // Setters and stuff
     public void setPosEnd ( Vector vec ) {

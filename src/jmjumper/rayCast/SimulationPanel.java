@@ -1,9 +1,10 @@
 package jmjumper.rayCast;
 
+import jmjumper.rayCast.components.keyInputs;
 import jmjumper.rayCast.lightComponents.LightRay;
 import jmjumper.rayCast.lightComponents.LightSource;
 import jmjumper.rayCast.lightComponents.Obstacle;
-import jmjumper.rayCast.lightComponents.Vector;
+import jmjumper.rayCast.components.Vector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,12 +12,13 @@ import java.awt.event.*;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 
-public class SimulationPanel extends JPanel implements Screen, MouseMotionListener, MouseListener, KeyListener {
+public class SimulationPanel extends JPanel implements Screen, MouseMotionListener, MouseListener {
 
     private final int width;
     private final int height;
     private LightSource lightSource;
     private final ArrayList<Obstacle> obstacles;
+    private ArrayList<Integer> lengthList;
 
     private Vector startDrag;
 
@@ -28,10 +30,10 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
         this.width = width;
         this.height = height;
         obstacles = new ArrayList<>();
+        lengthList = new ArrayList<>();
 
         addMouseMotionListener(this);
         addMouseListener(this);
-        addKeyListener(this);
         setFocusable(true);
     }
 
@@ -39,17 +41,23 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
         setPreferredSize(new Dimension(width, height));
         setBackground(Color.black);
         lightSource = new LightSource(50, 50, width, height);
+        addKeyListener(new keyInputs(this));
     }
 
     private void addObstacle ( Vector start, Vector end ) {
         obstacles.add(new Obstacle(start, end));
     }
 
+    public void deleteObsticals () {
+        obstacles.clear();
+    }
+
     private void checkCollision () {
         LightRay rays[] = lightSource.getRays();
 
-
+        lengthList = new ArrayList<>();
         for ( LightRay ray : rays ) {
+            if ( ray == null ) continue;
             Vector rayPosOrigin = ray.getPosOrigin();
             Vector rayPosEnd = ray.getPosEnd();
             int x1 = rayPosOrigin.getX();
@@ -75,9 +83,10 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
                             ray.setPosEnd(intersection);
                         }
                     }
-                } else System.out.println("denominator is zero!");
+                }
             }
             if ( !intersections.isEmpty() ) {
+
                 Vector nearest = new Vector(5000, 5000);
                 int maxValue = nearest.substract(rayPosOrigin).length();
                 for ( Vector vec : intersections ) {
@@ -89,6 +98,7 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
                 }
                 ray.setPosEnd(nearest);
             }
+            lengthList.add(ray.length());
         }
     }
 
@@ -133,6 +143,7 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
         lightSource.setLIGHT_RADIUS(radius);
     }
 
+
     // Mouseevents
     @Override
     public void mouseDragged ( MouseEvent e ) {
@@ -158,23 +169,21 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
         if ( SwingUtilities.isRightMouseButton(e) ) {
             Vector endDrag = new Vector(e.getX(), e.getY());
             addObstacle(startDrag, endDrag);
+            point2 = null;
+            repaint();
         }
     }
 
-    @Override
-    public void keyPressed ( KeyEvent e ) {
-        switch ( e.getKeyCode() ) {
-            case KeyEvent.VK_1 -> lightSource.setNUMBER_RAYS(50);
-            case KeyEvent.VK_2 -> lightSource.setNUMBER_RAYS(100);
-            case KeyEvent.VK_3 -> lightSource.setNUMBER_RAYS(200);
-            case KeyEvent.VK_4 -> lightSource.setNUMBER_RAYS(300);
-            case KeyEvent.VK_5 -> lightSource.setNUMBER_RAYS(400);
-            case KeyEvent.VK_6 -> lightSource.setNUMBER_RAYS(500);
-            case KeyEvent.VK_7 -> lightSource.setNUMBER_RAYS(750);
-            case KeyEvent.VK_8 -> lightSource.setNUMBER_RAYS(1000);
-            case KeyEvent.VK_9 -> lightSource.setNUMBER_RAYS(1500);
-            case KeyEvent.VK_0 -> lightSource.setNUMBER_RAYS(5000);
-        }
+    public int getNumberRays () {
+        return lightSource.getNumberRays();
+    }
+
+    public ArrayList<Integer> getLengthList () {
+        return lengthList;
+    }
+
+    public LightSource getLightSource () {
+        return lightSource;
     }
 
     // unused methods
@@ -192,15 +201,5 @@ public class SimulationPanel extends JPanel implements Screen, MouseMotionListen
 
     @Override
     public void mouseExited ( MouseEvent e ) {
-    }
-
-    @Override
-    public void keyTyped ( KeyEvent e ) {
-
-    }
-
-    @Override
-    public void keyReleased ( KeyEvent e ) {
-
     }
 }

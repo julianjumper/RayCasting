@@ -1,5 +1,7 @@
 package jmjumper.rayCast.lightComponents;
 
+import jmjumper.rayCast.components.Vector;
+
 import javax.swing.*;
 import java.awt.*;
 
